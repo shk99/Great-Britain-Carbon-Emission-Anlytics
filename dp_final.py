@@ -66,6 +66,7 @@ def get_generation_mix_data(period_index, region_id):
 
 # Dash app initialization
 app = dash.Dash(__name__)
+server = app.server
 
 # Layout of the web page
 app.layout = html.Div(children=[
