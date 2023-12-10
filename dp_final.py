@@ -27,7 +27,7 @@ try:
     collection_api.create_index([("createdAt", pymongo.ASCENDING)], expireAfterSeconds=3600)
     
 finally:
-    client.close()
+    pass
 
 
 # Function to get data from Collection 2
@@ -66,7 +66,6 @@ def get_generation_mix_data(period_index, region_id):
 
 # Dash app initialization
 app = dash.Dash(__name__)
-server = app.server
 
 # Layout of the web page
 app.layout = html.Div(children=[
@@ -150,3 +149,4 @@ def update_generation_mix(selected_region):
 
 if __name__ == '__main__':
     app.run_server(debug=True)
+    client.close()
