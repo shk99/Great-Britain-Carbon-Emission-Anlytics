@@ -9,7 +9,7 @@ client = MongoClient('mongodb+srv://data_programming:dpfall2023#@cluster0.dkjfyr
 database = client['CarbonAPI']
 collection1 = database['HalfHourlyRegionalStats']
 collection2 = database['OverallCarbonStats']
-collection_api = database['CarbonAPI']  # Add this line to create the collection
+collection_api = database['CarbonAPI']
 
 url1 = 'https://api.carbonintensity.org.uk/regional/intensity/2023-11-26T00:01Z/2023-12-08T11:59Z'
 url2 = 'https://api.carbonintensity.org.uk/intensity/stats/2023-12-01T00:01Z/2023-12-08T11:59Z/2'
@@ -23,14 +23,14 @@ try:
     data2 = response2.json()
     collection2.insert_one(data2)
 
-    # Explicitly create the CarbonAPI collection if it doesn't exist
+    
     collection_api.create_index([("createdAt", pymongo.ASCENDING)], expireAfterSeconds=3600)
     
 finally:
     pass
 
 
-# Function to get data from Collection 2
+
 def get_plot_data_collection2():
     data = collection2.find_one()['data']
     
@@ -41,7 +41,7 @@ def get_plot_data_collection2():
     
     return timestamps, avg_intensity, min_intensity, max_intensity
 
-# Function to get data from Collection 1
+
 def get_plot_data_collection1():
     data = collection1.find_one()['data']
     
@@ -55,24 +55,24 @@ def get_plot_data_collection1():
     
     return region_names, forecast_intensity
 
-# Function to get generation mix data for a specific region in a given period
+
 def get_generation_mix_data(period_index, region_id):
-    data = collection1.find_one()['data'][period_index]['regions'][region_id - 1]  # Region IDs start from 1
+    data = collection1.find_one()['data'][period_index]['regions'][region_id - 1]
     
     fuel_types = [entry['fuel'] for entry in data['generationmix']]
     percentages = [entry['perc'] for entry in data['generationmix']]
     
     return fuel_types, percentages
 
-# Dash app initialization
+
 app = dash.Dash(__name__)
 server = app.server
 
-# Layout of the web page
+
 app.layout = html.Div(children=[
     html.H1(children='Data Visualization'),
 
-    # Graph for Collection 2
+    
     dcc.Graph(
         id='graph2',
         figure={
@@ -89,7 +89,7 @@ app.layout = html.Div(children=[
         }
     ),
 
-    # Graph for Collection 1 Intensity
+    
     dcc.Graph(
         id='graph1-intensity',
         figure={
@@ -104,7 +104,7 @@ app.layout = html.Div(children=[
         }
     ),
 
-    # Dropdown for selecting region
+    
     dcc.Dropdown(
         id='region-dropdown',
         options=[{'label': region, 'value': i + 1} for i, region in enumerate(get_plot_data_collection1()[0])],
@@ -112,24 +112,23 @@ app.layout = html.Div(children=[
         style={'width': '50%'}
     ),
 
-    # Graph for Collection 1 Generation Mix
+    
     dcc.Graph(
         id='graph1-generation-mix'
     )
 ])
 
-# Callback to update the generation mix graph based on selected region
 @app.callback(
     Output('graph1-generation-mix', 'figure'),
     [Input('region-dropdown', 'value')]
 )
 def update_generation_mix(selected_region):
-    # Find the period index (assuming we have a specific period selected)
-    period_index = 0  # Change this based on your actual data and how you determine the selected period
+    
+    period_index = 0 
 
     fuel_types, percentages = get_generation_mix_data(period_index, selected_region)
 
-    # Pie chart for generation mix
+    
     pie_chart = {
         'data': [
             {
