@@ -108,7 +108,7 @@ app.layout = html.Div(children=[
     dcc.Dropdown(
         id='region-dropdown',
         options=[{'label': region, 'value': i + 1} for i, region in enumerate(get_plot_data_collection1()[0])],
-        value=1,  # Default selected region ID
+        value=1,
         style={'width': '50%'}
     ),
 
